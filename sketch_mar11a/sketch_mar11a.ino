@@ -1,18 +1,36 @@
+/* This is Nick's adaptation of my Menus1 sketch - he's demonstrating other 
+ and better ways to approach the menu system, introducing techniques I hadn't seen.  
+*/
+
+
+// Call Libraries:
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
 
+/*  Declare Structures:  (New! These are "Forward Declarations" - tell the compiler 
+that these strucxtures (will) exist, although they will be detailed later. */
+
 struct Menu;
 struct MenuItem;
+
+
+//Define LCD pinout:
 
 const int LCD_COLS=16, LCD_ROWS=2;
 const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
 hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 
+
+// Defining the content of the structures (I think!):
 struct Menu {
-  struct MenuItem **items;
+  struct MenuItem **items; 
   int pos;
   int num_items;
 };
+// so, the Menu structure contains Menuitems
+  // first "*" tells it that it's a pointer, 2nd tells it that its an 
+  // array of pointers
+
 
 struct MenuItem {
   char *text;
@@ -22,7 +40,16 @@ struct MenuItem {
     struct Menu *submenu;
   };
 };
+// so, the MenuItem structure contains text characters and submenu items
+  // the "union" tells it that the MenuItem entry can be either a func
+  // or a sub-menu pointer. 
+// the boolean "is_submenu" tells the script whether it contains a func or a sub-menu.
 
+/*  Foo and B Functions are the Top Level menu items, 
+ while Bar and Baz are sub-menu items under B Functions.
+ do_foo is the function that "does" the Foo action, similarly 
+ deo_bar and do_baz "do" the bar and baz actions.  */
+ 
 void do_foo() {
   lcd.setCursor(0,1);
   lcd.print("Called do_foo()");
@@ -40,7 +67,7 @@ void do_baz() {
   lcd.print("Called do_baz()");
   delay(1000);
 }
-
+//**************************************************************************
 void initMenuItem(struct MenuItem* i, char* text, void (*func)()) {
   i->text = text;
   i->is_submenu=false;
